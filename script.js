@@ -1,56 +1,34 @@
-// Food data
-const foodData = [
-    {
-        id: 1,
-        name: "Margherita Pizza",
-        price: 12.99,
-        category: "pizza",
-        image: "img/food/p1.jpg",
-        description: "Classic pizza with tomato sauce, mozzarella, and basil"
-    },
-    {
-        id: 2,
-        name: "Pepperoni Pizza",
-        price: 14.99,
-        category: "pizza",
-        image: "img/category/pizza.jpg",
-        description: "Pizza topped with pepperoni and mozzarella cheese"
-    },
-    {
-        id: 3,
-        name: "Cheeseburger",
-        price: 9.99,
-        category: "burger",
-        image: "img/food/b1.jpg",
-        description: "Juicy beef burger with cheese, lettuce, and tomato"
-    },
-    {
-        id: 4,
-        name: "Chicken Burger",
-        price: 10.99,
-        category: "burger",
-        image: "img/category/burger.jpg",
-        description: "Grilled chicken breast with special sauce"
-    },
-    {
-        id: 5,
-        name: "Club Sandwich",
-        price: 8.99,
-        category: "sandwich",
-        image: "img/food/s1.jpg",
-        description: "Triple-decker sandwich with turkey, bacon, and vegetables"
-    },
-    {
-        id: 6,
-        name: "Veggie Sandwich",
-        price: 7.99,
-        category: "sandwich",
-        image: "img/category/sandwich.jpg",
-        description: "Fresh vegetables with hummus and sprouts"
-    }
-];
+// API Base URL
+const API_URL = "https://food-order-api-qiot.onrender.com";
 
-// Cart array
+const loggedIn = localStorage.getItem("loggedIn");
+
+if(
+    !loggedIn &&
+    !window.location.pathname.includes("login.html") &&
+    !window.location.pathname.includes("signup.html")
+){
+    window.location.href = "login.html";
+}
+let foodData = [];
+
+async function loadFoodsFromBackend() {
+    try {
+        const response = await fetch(`${API_URL}/foods`);
+        foodData = await response.json();
+
+        if (document.getElementById("menuFoods")) {
+            displayMenuFoods();
+        }
+
+        if (document.getElementById("featuredFoods")) {
+            displayFeaturedFoods();
+        }
+    } catch (error) {
+        console.error("Error loading foods:", error);
+    }
+}
+
 let cart = [];
 
 // DOM Elements
@@ -63,23 +41,27 @@ const cartCount = document.querySelector('.cart-count');
 const featuredFoods = document.getElementById('featuredFoods');
 const checkoutBtn = document.getElementById('checkoutBtn');
 
-// Initialize the app
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     loadCartFromLocalStorage();
-    displayFeaturedFoods();
     updateCartUI();
-    
-    // Event Listeners
+
+    await loadFoodsFromBackend();
+
     if (cartLink) {
         cartLink.addEventListener('click', function(e) {
             e.preventDefault();
             openCart();
         });
     }
-    closeCart.addEventListener('click', closeCartModal);
-    checkoutBtn.addEventListener('click', checkout);
-    
-    // Close modal when clicking outside
+
+    if (closeCart) {
+        closeCart.addEventListener('click', closeCartModal);
+    }
+
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', checkout);
+    }
+
     window.addEventListener('click', function(event) {
         if (event.target === cartModal) {
             closeCartModal();
@@ -98,11 +80,11 @@ function displayFeaturedFoods() {
         const foodCard = document.createElement('div');
         foodCard.className = 'food-card';
         foodCard.innerHTML = `
-            <img src="${food.image}" alt="${food.name}">
+            <img src="${food.image_url}" alt="${food.food_name}">
             <div class="food-info">
-                <h3>${food.name}</h3>
+                <h3>${food.food_name}</h3>
                 <p>${food.description}</p>
-                <span class="price">$${food.price.toFixed(2)}</span>
+                <span class="price">₹${food.price.toFixed(2)}</span>
                 <button class="add-to-cart" data-id="${food.id}">Add to Cart</button>
             </div>
         `;
@@ -131,9 +113,9 @@ function addToCart(foodId) {
         } else {
             cart.push({
                 id: food.id,
-                name: food.name,
+                name: food.food_name,
                 price: food.price,
-                image: food.image,
+                image: food.image_url,
                 quantity: 1
             });
         }
@@ -142,7 +124,7 @@ function addToCart(foodId) {
         updateCartUI();
         
         // Show confirmation
-        alert(`${food.name} added to cart!`);
+        alert(`${food.food_name} added to cart!`);
     }
 }
 
@@ -178,7 +160,7 @@ function updateCartUI() {
     // Update cart modal
     if (cart.length === 0) {
         cartItems.innerHTML = '<p class="empty-cart-message">Your cart is empty</p>';
-        cartTotal.textContent = '0.00';
+        cartTotal.textContent = '₹0.00';
         return;
     }
     
@@ -194,21 +176,21 @@ function updateCartUI() {
         cartItem.innerHTML = `
             <div class="item-info">
                 <h4>${item.name}</h4>
-                <p class="item-price">$${item.price.toFixed(2)} each</p>
+                <p class="item-price">₹${item.price.toFixed(2)} each</p>
             </div>
             <div class="item-quantity">
                 <button class="quantity-btn minus" data-id="${item.id}">-</button>
                 <span class="quantity">${item.quantity}</span>
                 <button class="quantity-btn plus" data-id="${item.id}">+</button>
             </div>
-            <p class="item-total">$${itemTotal.toFixed(2)}</p>
+            <p class="item-total">₹${itemTotal.toFixed(2)}</p>
             <button class="remove-item" data-id="${item.id}">×</button>
         `;
         
         cartItems.appendChild(cartItem);
     });
     
-    cartTotal.textContent = total.toFixed(2);
+    cartTotal.textContent = "₹" + total.toFixed(2);
     
     // Add event listeners to cart buttons
     document.querySelectorAll('.quantity-btn.minus').forEach(button => {
@@ -290,13 +272,12 @@ Items:
     order.items.forEach(item => {
         const itemTotal = (item.price * item.quantity).toFixed(2);
         billContent += `${item.name}
-  Price: $${item.price.toFixed(2)} x ${item.quantity} = $${itemTotal}
--------------------------------------
+  Price: ₹${item.price.toFixed(2)} x ${item.quantity} = ₹${itemTotal}
 `;
     });
     
     billContent += `
-Total Amount: $${order.total.toFixed(2)}
+Total Amount: ₹${order.total.toFixed(2)}
 
 =====================================
     Thank you for your order!
@@ -429,20 +410,17 @@ function displayMenuFoods(category = 'all') {
     
     menuFoods.innerHTML = '';
     
-    const filteredFoods = category === 'all' 
-        ? foodData 
-        : foodData.filter(food => food.category === category);
+    const filteredFoods = foodData;
     
     filteredFoods.forEach(food => {
         const foodCard = document.createElement('div');
         foodCard.className = 'food-card';
         foodCard.innerHTML = `
-            <img src="${food.image}" alt="${food.name}">
+            <img src="${food.image_url}" alt="${food.food_name}">
             <div class="food-info">
-                <h3>${food.name}</h3>
+                <h3>${food.food_name}</h3>
                 <p>${food.description}</p>
-                <span class="price">$${food.price.toFixed(2)}</span>
-                <button class="add-to-cart" data-id="${food.id}">Add to Cart</button>
+                <span class="price">₹${food.price.toFixed(2)}</span>
             </div>
         `;
         menuFoods.appendChild(foodCard);
@@ -477,13 +455,13 @@ function setupFilterButtons() {
 
 // Initialize menu page if on menu page
 if (document.querySelector('.menu-page')) {
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
         loadCartFromLocalStorage();
         updateCartUI();
-        displayMenuFoods();
+
+        await loadFoodsFromBackend();
         setupFilterButtons();
-        
-        // Event Listeners
+
         const cartLink = document.getElementById('cartLink');
         if (cartLink) {
             cartLink.addEventListener('click', function(e) {
@@ -491,9 +469,9 @@ if (document.querySelector('.menu-page')) {
                 openCart();
             });
         }
+
         closeCart.addEventListener('click', closeCartModal);
-        
-        // Close modal when clicking outside
+
         window.addEventListener('click', function(event) {
             if (event.target === cartModal) {
                 closeCartModal();
@@ -501,6 +479,8 @@ if (document.querySelector('.menu-page')) {
         });
     });
 }
+        
+    
 
 // Initialize about page if on about page
 if (document.querySelector('.about-page')) {
