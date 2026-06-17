@@ -1,63 +1,494 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Foodie Delight</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-left {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .login-left h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .login-left p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .login-left .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .login-right {
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-right h2 {
+            color: #1e3c72;
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            animation: fadeIn 0.6s ease-out backwards;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 15px rgba(42, 82, 152, 0.2);
+            background-color: #f8f9fa;
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            color: #2a5298;
+            font-size: 1.1em;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: #2a5298;
+            cursor: pointer;
+            font-size: 1.1em;
+            padding: 5px;
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: #1e3c72;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .forgot-password a {
+            color: #2a5298;
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .forgot-password a:hover {
+            color: #1e3c72;
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, #2a5298, #1e3c72);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(42, 82, 152, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .signup-link a {
+            color: #2a5298;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .signup-link a:hover {
+            color: #1e3c72;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            background-color: #fadbd8;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: shake 0.5s ease-in-out;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .success-message {
+            color: #27ae60;
+            background-color: #d5f4e6;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.5s ease-out;
+            border-left: 4px solid #27ae60;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+
+            .login-left {
+                padding: 40px 30px;
+            }
+
+            .login-right {
+                padding: 40px 30px;
+            }
+
+            .login-left h1 {
+                font-size: 2em;
+            }
+
+            .login-right h2 {
+                font-size: 1.6em;
+            }
+
+            .login-left .icon {
+                font-size: 3em;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="login-wrapper">
+        <div class="login-container">
+            <!-- Left Section -->
+            <div class="login-left">
+                <div class="icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <h1>Foodie Delight</h1>
+                <p>Discover delicious food delivered to your doorstep. Join us for an amazing culinary experience!</p>
+            </div>
 
-<h2>Login</h2>
+            <!-- Right Section -->
+            <div class="login-right">
+                <h2>Welcome Back</h2>
+                
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
 
-<form id="loginForm">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                placeholder="Enter your email" 
+                                required
+                                autocomplete="email"
+                            >
+                        </div>
+                    </div>
 
-    <input type="email" id="email" placeholder="Email" required>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                placeholder="Enter your password" 
+                                required
+                                autocomplete="current-password"
+                            >
+                            <button type="button" class="toggle-password" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
 
-    <input type="password" id="password" placeholder="Password" required>
+                    <div class="forgot-password">
+                        <a href="#">Forgot your password?</a>
+                    </div>
 
-    <button type="submit">Login</button>
+                    <button type="submit" class="login-btn" id="loginBtn">
+                        <span>Login to Your Account</span>
+                    </button>
+                </form>
 
-</form>
+                <div class="signup-link">
+                    Don't have an account? <a href="signup.html">Sign up here</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script>
+    <script>
+        const API_URL = "https://food-order-api-qiot.onrender.com";
 
-const API_URL = "https://food-order-api-qiot.onrender.com";
+        // Password visibility toggle
+        const togglePasswordBtn = document.getElementById("togglePassword");
+        const passwordInput = document.getElementById("password");
 
-document.getElementById("loginForm").addEventListener("submit", async function(e){
-
-    e.preventDefault();
-
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    try {
-        const response = await fetch(`${API_URL}/login`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ email, password })
+        togglePasswordBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+            passwordInput.setAttribute("type", type);
+            
+            // Update icon
+            const icon = this.querySelector("i");
+            icon.classList.toggle("fa-eye");
+            icon.classList.toggle("fa-eye-slash");
         });
 
-        if (response.ok) {
-            const data = await response.json();
-            
-            // Store user info and token
-            localStorage.setItem("user", JSON.stringify({ email }));
-            localStorage.setItem("token", data.access_token);
-            localStorage.setItem("loggedIn", "true");
-            
-            alert("Login Successful");
-            window.location.href = "index.html";
-        } else {
-            alert("Invalid Email or Password");
+        // Form submission
+        const loginForm = document.getElementById("loginForm");
+        const loginBtn = document.getElementById("loginBtn");
+        const errorMessage = document.getElementById("errorMessage");
+        const successMessage = document.getElementById("successMessage");
+
+        loginForm.addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            // Clear previous messages
+            errorMessage.style.display = "none";
+            successMessage.style.display = "none";
+
+            // Validate inputs
+            if (!email || !password) {
+                showError("Please fill in all fields");
+                return;
+            }
+
+            // Show loading state
+            loginBtn.classList.add("loading");
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="spinner"></span><span>Logging in...</span>';
+
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Store user info and token
+                    localStorage.setItem("user", JSON.stringify({ email }));
+                    localStorage.setItem("token", data.access_token);
+                    localStorage.setItem("loggedIn", "true");
+                    
+                    // Show success message and redirect
+                    showSuccess("Login successful! Redirecting...");
+                    
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 1500);
+                } else {
+                    showError(data.detail || "Invalid email or password");
+                    resetLoginBtn();
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                showError("An error occurred. Please check your connection and try again.");
+                resetLoginBtn();
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = "block";
         }
-    } catch (error) {
-        console.error("Login error:", error);
-        alert("An error occurred. Please try again.");
-    }
 
-});
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = "block";
+        }
 
-</script>
+        function resetLoginBtn() {
+            loginBtn.classList.remove("loading");
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<span>Login to Your Account</span>';
+        }
 
+        // Real-time validation feedback
+        document.getElementById("email").addEventListener("input", function() {
+            errorMessage.style.display = "none";
+        });
+
+        document.getElementById("password").addEventListener("input", function() {
+            errorMessage.style.display = "none";
+        });
+    </script>
 </body>
 </html>
